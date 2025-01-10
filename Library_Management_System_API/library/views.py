@@ -42,22 +42,17 @@ class UserDetailView(generics.RetrieveAPIView):
     def get_queryset(self):
         # Allow users to see only their details
         return CustomUser.objects.filter(id=self.request.user.id)
-
-
-# ViewSet for managing books
-"""class BookViewSet(viewsets.ModelViewSet):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
+    
+class UserUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserCreateSerializer
+    permission_classes = [IsAuthenticated]  # Open for user registration
     authentication_classes = [JWTAuthentication]
-    filter_backends = [DjangoFilterBackend,SearchFilter]
-    filterset_fields = ['title', 'author', 'isbn', 'copies_available']
-    search_fields = ['title', 'author', 'isbn']
-
-    def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsAdminUser()]  # Only admins can modify books
-        return [permissions.AllowAny()]  # All users can view books"""
-
+    
+    def get_queryset(self):
+        user_id = self.kwargs.get('pk')
+        return CustomUser.objects.filter(id=user_id)
+    
 class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
